@@ -1,0 +1,41 @@
+# Cloudflare Pages Deployment Configuration
+name = "glowup-blog"
+compatibility_date = "2023-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Build configuration
+[build]
+  command = "npm run build"
+  output_directory = ".next"
+
+# Environment variables
+[env]
+  NODE_ENV = "production"
+
+# D1 Database binding
+[[d1_databases]]
+  binding = "DB"
+  database_name = "glowup_blog_db"
+  database_id = "placeholder-id"
+
+# Scheduled content generation (runs every hour)
+[[scheduled_functions]]
+  name = "hourly-content-generation"
+  cron = "0 * * * *"
+  path = "src/scheduled/generate-content.js"
+
+# Scheduled health check (runs every 15 minutes)
+[[scheduled_functions]]
+  name = "health-check"
+  cron = "*/15 * * * *"
+  path = "src/scheduled/health-check.js"
+
+# Routes configuration
+[routes]
+  # Serve static files from the public directory
+  static_files = "/public"
+  
+  # API routes
+  [[routes.api]]
+    pattern = "/api/*"
+    script = "src/api/[[path]].js"
